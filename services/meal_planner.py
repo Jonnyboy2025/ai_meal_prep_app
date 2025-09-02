@@ -1,11 +1,18 @@
-import openai
+from openai import OpenAI
 import os
 import pandas as pd
 import requests
+from dotenv import load_dotenv
 
+load_dotenv()
+
+print("OpenAI Key:", os.getenv("OPENAI_API_KEY"))
+print("Spoonacular Key:", os.getenv("SPOONACULAR_API_KEY"))
 # Set your API keys from environment variables for security
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# openai.api_key = os.getenv("OPENAI_API_KEY")
 SPOONACULAR_API_KEY = os.getenv("SPOONACULAR_API_KEY")
+client = OpenAI()
+
 
 def get_meal_plan_from_ai(user_preferences):
     """
@@ -17,11 +24,13 @@ def get_meal_plan_from_ai(user_preferences):
     """
     
     try:
-        response = openai.chat.completions.create(
-            model="gpt-4o",  # or your preferred model
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7
+        response = client.responses.create(
+            model="gpt-5",
+            input=prompt,
         )
+        
+        print(response.output_text)
+
         return response.choices[0].message.content
     except Exception as e:
         print(f"Error calling LLM API: {e}")
@@ -54,5 +63,5 @@ def generate_grocery_list(meal_plan_text):
     (This is a simplified version and may require more advanced NLP for complex plans)
     """
     # Dummy implementation for now
-    example_ingredients = ["avocado", "bread", "lentils", "carrots", "celery", "tofu", "onion", "spinach"]
+    example_ingredients = ["spinach"]
     return [item for item in example_ingredients if item in meal_plan_text.lower()]
